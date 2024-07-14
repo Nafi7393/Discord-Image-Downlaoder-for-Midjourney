@@ -1,34 +1,25 @@
 import random
 import time
-from dotenv import load_dotenv
-import discord
 import os
+import asyncio
 import requests
-
-# Load environment variables
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+import discord
+from dotenv import load_dotenv
 
 
 class DiscordImageDownloader:
-    def __init__(self, bot_token):
+    def __init__(self, bot_token, all_channels, use_emoji=True):
         self.bot_token = bot_token
-        self.client = discord.Client(intents=discord.Intents.all())
+        self.channels = all_channels
+        self.use_emoji = use_emoji
+        self.intents = discord.Intents.all()
+        self.client = discord.Client(intents=self.intents)
         self.folder_and_links = {}
-
-    def run(self):
-        @self.client.event
-        async def on_ready():
-            print(f"Logged in as {self.client.user}")
-
-        self.client.run(self.bot_token)
-
-    def add_channel(self, channel_id, folder_path):
-        self.folder_and_links[channel_id] = folder_path
 
     async def download_images(self, message, folder):
         if folder not in self.folder_and_links:
             self.folder_and_links[folder] = []
+
         for attachment in message.attachments:
             file_name = f"{attachment.filename}"
             file_id = f"{attachment.id}"
@@ -40,25 +31,37 @@ class DiscordImageDownloader:
                 "file_url": file_url
             })
 
-    async def process_channel(self, channel_id):
-        channel = self.client.get_channel(channel_id)
-        folder_path = self.folder_and_links[channel_id]
+    async def on_ready(self):
+        print(f"Logged in as {self.client.user}")
 
-        async for message in channel.history(limit=None):
-            await self.download_images(message, folder_path)
-            await message.add_reaction(u"❌")
+        for channel_id, folder_path, limit in self.channels:
+            channel = self.client.get_channel(channel_id)
+            set_limit = None if limit <= 0 else limit
+            async for message in channel.history(limit=set_limit):
+                await self.download_images(message, folder_path)
+                if self.use_emoji:
+                    await message.add_reaction(u"❌")
 
-        print(f"Link Got DONE --- {channel}")
+            print(f"Link Got DONE --- {channel}")
+        await self.client.close()
 
-    def download_file(self, url, save_path):
+    def get_link(self):
+        self.client.event(self.on_ready)
+        self.client.run(self.bot_token)
+        return self.folder_and_links
+
+    @staticmethod
+    def download_file(url, save_path):
         response = requests.get(url, stream=True)
         with open(save_path, 'wb') as file:
             for chunk in response.iter_content(chunk_size=32768):
                 if chunk:
                     file.write(chunk)
 
-    def save_files(self):
-        for folder_name, values in self.folder_and_links.items():
+    def run(self):
+        path_and_links = self.get_link()
+
+        for folder_name, values in path_and_links.items():
             for image in values:
                 file_name = image['file_name']
                 file_id = image['file_id']
@@ -72,12 +75,13 @@ class DiscordImageDownloader:
 
 
 if __name__ == "__main__":
-    bot = DiscordImageDownloader(BOT_TOKEN)
+    # Load environment variables
+    load_dotenv()
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-    bot.add_channel(1177881888266928208, "downloaded_files")
-
-    # Run the bot and process the channel
-    bot.run()
-
-    # After the bot has processed the channel, save the files
-    bot.save_files()
+    channels = [
+        # Example format: (channel_id, folder_path, download_limit)
+        (1177881888266928208, "downloaded_files", 0)
+    ]
+    downloader = DiscordImageDownloader(BOT_TOKEN, channels, use_emoji=True)
+    downloader.run()
