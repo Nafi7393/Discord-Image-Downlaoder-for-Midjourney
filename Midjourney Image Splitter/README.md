@@ -76,7 +76,7 @@ This is a simple script to split MidJourney images into four quadrants. The scri
      - `output/image_quadrant_3.png`
      - `output/image_quadrant_4.png`
 3. **EXAMPLE**:
-<table style="width: 100%;">
+<table>
   <thead>
     <tr>
       <th>Original Image</th>
