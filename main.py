@@ -80,7 +80,7 @@ if __name__ == "__main__":
     BOT_TOKEN = os.getenv("BOT_TOKEN")
 
     channels = [
-        # Example format: (channel_id, folder_path, download_limit)
+        # Example format: (channel_id, folder_path, download_limit) limit 0 means Unlimited
         (1177881888266928208, "downloaded_files", 0)
     ]
     downloader = DiscordImageDownloader(BOT_TOKEN, channels, use_emoji=True)
