@@ -84,8 +84,8 @@ This is a simple script to split MidJourney images into four quadrants. The scri
     </tr>
   </thead>
   <tbody>
-    <tr  style="text-align: center;">
-      <td rowspan="5"><img src="input/1.png" alt="Original Image" style="width: 50%;"></td>
+    <tr>
+      <td rowspan="5"><img src="input/1.png" alt="Original Image"  style="width: 100%;"></td>
     </tr>
     <tr>
       <td><img src="output/1_quadrant_1.png" alt="Quadrant 1" style="width: 25%;"></td>
