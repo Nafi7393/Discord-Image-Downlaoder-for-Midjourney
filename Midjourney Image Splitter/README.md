@@ -76,7 +76,7 @@ This is a simple script to split MidJourney images into four quadrants. The scri
      - `output/image_quadrant_3.png`
      - `output/image_quadrant_4.png`
 3. **EXAMPLE**:
-<table>
+<table style="width: 100%;">
   <thead>
     <tr>
       <th>Original Image</th>
@@ -84,8 +84,8 @@ This is a simple script to split MidJourney images into four quadrants. The scri
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td rowspan="5"><img src="input/1.png" alt="Original Image"  style="width: 75%;"></td>
+    <tr  style="text-align: center;">
+      <td rowspan="5" style="vertical-align: middle;"><img src="input/1.png" alt="Original Image" style="width: 50%;"></td>
     </tr>
     <tr>
       <td><img src="output/1_quadrant_1.png" alt="Quadrant 1" style="width: 25%;"></td>
@@ -101,6 +101,7 @@ This is a simple script to split MidJourney images into four quadrants. The scri
     </tr>
   </tbody>
 </table>
+
 
 
 ## Error Handling
